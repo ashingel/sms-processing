@@ -1,0 +1,7 @@
+# This file is a template for your own build.properties.username file that will override values set in build.xml
+# This will be used for values that are particular to your own machine / env
+# In general you should avoid making local changes to build.xml - 
+# rather change things in build.properties.username
+
+
+jar.name=application

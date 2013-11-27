@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Ant build file for Application -->
+
+<project default="help" basedir="." name="Application build script">
+    <!--Help information for build processing-->
+    <target name="help" depends="init" description="Help key for this build file">
+        <echo>
+            Master build file for Gate project
+
+            Available targets:
+
+            ----------------------------------------------------------------------------
+            Targets
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            help You are looking at it!
+            init Init properties file for current user
+            build-jar-fie build jar file and structure for command line GATE usage
+            build-war-fie build war file and structure for web based application
+        </echo>
+    </target>
+
+    <!--This target initialize main parameters of the build-->
+    <target name="init">
+        <!--Will be implemented-->
+        <antcall target="useLocalProperties"/>
+        <echo message="Loading local properties from build.properties.${user.name}"/>
+        <property file="build.properties.${user.name}"/>
+        <property file="build.properties"/>
+        <!-- debugging aids -->
+        <property name="verbose" value="false"/>
+        <!-- Assembly root path -->
+        <!--<property name="source.dir" value="../OMiner"/>-->
+        <property name="source.dir" value="${basedir}"/>
+        <property name="build.dir" location="${source.dir}/build"/>
+        <property name="assembly.root.path" location="${build.dir}/${jar.name}"/>
+        <property name="assembly.jar.path" location="${assembly.root.path}/jar"/>
+        <property name="assembly.jar.lib.path" location="${assembly.root.path}/lib"/>
+    </target>
+
+    <target name="useLocalProperties" unless="properties.user.local">
+        <echo message="Making version of build.properties.${user.name}"/>
+        <copy tofile="build.properties.${user.name}"
+              file="build.properties.default"/>
+    </target>
+
+    <!--This target initialize application structure for the build-->
+    <target name="make-assembly-dirs" depends="init">
+        <mkdir description="Create assembly root directory" dir="${assembly.root.path}"></mkdir>
+        <mkdir description="Create jar directory in assembly root path" dir="${assembly.jar.path}"></mkdir>
+    </target>
+
+    <target name="make-jar-assembly-dirs" depends="init">
+        <mkdir description="Create assembly root directory" dir="${assembly.root.path}"></mkdir>
+        <mkdir description="Create jar directory in assembly root path" dir="${assembly.jar.path}"></mkdir>
+        <mkdir description="Create lib directory in WEB-INF path" dir="${assembly.jar.lib.path}"></mkdir>
+        <mkdir description="Create plugins directory" dir="${assembly.jar.lib.path}/plugins"></mkdir>
+    </target>
+
+
+    <target name="compile-source-code-for-jar">
+        <javac
+                destdir="${assembly.root.path}/jar"
+                verbose="${verbose}"
+                optimize="on"
+                compiler="modern"
+                fork="true"
+                nowarn="true"
+                source="1.5"
+                debug="on"
+                memoryInitialSize="128m"
+                memoryMaximumSize="1024m">
+            <src path="${source.dir}/src"/>
+            <classpath>
+                <fileset dir="${assembly.jar.lib.path}"
+                         includes="*.jar"/>
+            </classpath>
+            <classpath>
+                <fileset dir="${source.dir}/lib" includes="*.jar"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="clean" depends="init" description="Removes all build artifacts">
+        <delete dir="${build.dir}" failonerror="false"/>
+    </target>
+
+
+    <target name="copy-jar-resources">
+        <!-- Copy libls-->
+        <copy todir="${assembly.jar.lib.path}" flatten="true" verbose="${verbose}">
+            <fileset
+                    dir="${source.dir}/lib"
+                    includes="*.*"/>
+        </copy>
+        <copy todir="${assembly.jar.lib.path}/plugins" flatten="false" verbose="${verbose}">
+            <fileset
+                    dir="${source.dir}/lib/plugins"/>
+        </copy>
+        <copy todir="${build.dir}/${jar.name}/resources" flatten="false" verbose="${verbose}">
+            <fileset
+                    dir="${source.dir}/resources"/>
+        </copy>
+    </target>
+
+    <target name="build-jar-file"
+            depends="init,clean,make-jar-assembly-dirs,copy-jar-resources,compile-source-code-for-jar"
+            description="Removes all build artifacts">
+        <jar manifest="${source.dir}/META-INF/MANIFEST.MF" basedir="${assembly.root.path}/jar"
+             destfile="${build.dir}/${jar.name}/${jar.name}.jar"/>
+        <delete dir="${build.dir}/${jar.name}/jar" failonerror="true"/>
+        <copy todir="${source.dir}/lib" flatten="false" verbose="${verbose}">
+            <fileset
+                    dir="${source.dir}/build/${jar.name}" includes="*.jar"/>
+        </copy>
+    </target>
+
+</project>

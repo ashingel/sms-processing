@@ -1,0 +1,1 @@
+java -Xms256m -Xmx1000m -jar  application.jar D:\projects\phrases\sources\sms-processing\build\application D:\projects\phrases\sources\sms-processing\tests D:\projects\phrases\sources\sms-processing\output
