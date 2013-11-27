@@ -1,0 +1,21 @@
+Phase:	dBNP
+Input: Token SpaceToken BNP
+Options: control = appelt
+
+Rule:dBNP
+(
+{Token.category==DT}{SpaceToken}({BNP}):bnp
+):dBNP
+-->
+{
+    AnnotationSet bnpSet = (AnnotationSet) bindings.get("bnp");
+    Node startNode = bnpSet.firstNode();
+    Node lastNode = bnpSet.lastNode();
+    AnnotationSet tokenSet = outputAS.get("Token").get(startNode.getOffset(), lastNode.getOffset());
+    // can't be 0;
+    String phrase = (tokenSet.size() > 1) ? "phrase" : "standalone";
+    FeatureMap features = Factory.newFeatureMap();
+    features.put("type", phrase);
+    outputAS.add(bnpSet.firstNode(), bnpSet.lastNode(), "dBNP", features);
+    outputAS.removeAll(bnpSet);
+}

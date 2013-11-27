@@ -1,0 +1,52 @@
+Phase:	BNP
+Input: Token SpaceToken Adjective Split
+Options: control = appelt
+
+/*Macro:ADJECTIVE
+(
+  ({Token.category==JJ}|{Token.category==JJS}|{Token.category==JJR}):adjective
+)
+*/
+Macro:NOUN
+(
+  ({Token.category==NN}|{Token.category==NNS}|{Token.category==NNP}|{Token.category==NNPS}|{Token.category==NP}|{Token.category==NPS}|{Token.category==FW})
+)
+
+Macro:ADVERB
+(
+  ({Token.category==RB}|{Token.category==RBS}|{Token.category==RBR})
+)
+
+Rule:BNP
+(
+//((ADVERB)?((NOUN)({SpaceToken})?)+) //NN+
+({Token.kind==number})?((ADVERB)?((NOUN)({SpaceToken})?)+)({Token.kind==number})? //NN+
+|
+//((ADVERB)?{Adjective}(({SpaceToken})?(NOUN))+) // JJ NN+
+((ADVERB)?{Adjective}(({SpaceToken})?({Token.kind==number})?(NOUN))+({Token.kind==number})?) // JJ NN+
+|
+//((ADVERB)?({Adjective})({SpaceToken})({Adjective})({SpaceToken})(NOUN)) // JJ JJ NN
+((ADVERB)?({Adjective})({SpaceToken})({Adjective})({SpaceToken})({Token.kind==number})?(NOUN)+({Token.kind==number})?) // JJ JJ NN
+):bnp
+-->
+{
+    AnnotationSet set = (AnnotationSet) bindings.get("bnp");
+    String text = gate.Utils.stringFor(doc, set);
+    if (text.endsWith(" ")) {
+        text = text.trim();
+    }
+    int length = text.length();
+    if (length > 2) {
+        // fix problem when some stupid values marked as nouns were removed
+        Long start = set.firstNode().getOffset();
+        Long stop = start + length;
+        String phrase = (text.contains(" ")) ? "phrase" : "standalone";
+        FeatureMap features = Factory.newFeatureMap();
+        features.put("type", phrase);
+        try {
+            outputAS.add(start, stop, "BNP", features);
+        } catch (InvalidOffsetException e) {
+            e.printStackTrace();
+        }
+    }
+}

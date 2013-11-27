@@ -1,0 +1,12 @@
+ hadn= had not
+ hadn't= had not
+ wont= will not
+ won't= will not
+ aint= am not
+ ain't= am not
+ dont=do not
+ don't= do not
+ doesn= does not
+ doesnt= does not
+ didn't= did not
+ can't= can not

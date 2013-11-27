@@ -1,0 +1,17 @@
+Phase:	FixIssueWithToken
+Input: Token
+Options: control = appelt
+
+Rule: FixIssueWithToken
+Priority: 50
+(
+    {Token.kind==punctuation,Token.category==NN}
+):fixIssueWithToken
+-->
+{
+    AnnotationSet set = (AnnotationSet) bindings.get("fixIssueWithToken");
+    Annotation token = set.iterator().next();
+    String category = gate.Utils.stringFor(doc, token);
+    token.getFeatures().put("category", category);
+}
+

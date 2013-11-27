@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.6.5
+Created-By: 1.5.0_04-b05 (Sun Microsystems Inc.)
+Main-Class: com.langbricks.corpus.processor.KeyphraseExtractor
+Class-Path: lib/ahocorasick-1.1.jar lib/ant.jar lib/application.jar lib/commons-io.jar lib/commons-lang.jar lib/commons-logging.jar lib/flying-saucer-core.jar lib/gate.jar lib/gate-asm.jar lib/gate-compiler-jdt.jar lib/ivy.jar lib/javacc.jar lib/jaxen.jar lib/jdom.jar lib/log4j.jar lib/nekohtml.jar lib/ontotext.jar lib/pdfbox.jar lib/stax2-api.jar lib/tika-core.jar lib/tika-parsers.jar lib/xercesImpl.jar lib/xpp3.jar lib/xstream.jar

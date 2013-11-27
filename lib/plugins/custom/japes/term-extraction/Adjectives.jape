@@ -1,0 +1,30 @@
+Phase:	Adjectives
+//Input: Token SpaceToken
+Input: Token
+Options: control = appelt
+
+Macro:ADJECTIVE
+(
+ ({Token.category==JJ}|{Token.category==JJS}|{Token.category==JJSS})
+)
+
+Rule:Adjectives
+(
+ (ADJECTIVE)
+):adjective
+-->
+{
+    AnnotationSet set = (AnnotationSet) bindings.get("adjective");
+    Node startNode = set.firstNode();
+    Node stopNode = set.lastNode();
+    AnnotationSet sentimentSet = outputAS.get("Sentiment");
+    if (sentimentSet != null && !sentimentSet.isEmpty()) {
+        // get sentiments for this adjective
+        sentimentSet = sentimentSet.get("Sentiment", startNode.getOffset(), stopNode.getOffset());
+        if (sentimentSet == null || sentimentSet.isEmpty()) {
+            // good. no sentiments here! Create Adjective Annotation
+            outputAS.add(startNode, stopNode, "Adjective", Factory.newFeatureMap());
+        }
+    }
+}
+

@@ -1,0 +1,9 @@
+MultiPhase:	TermExtractionMain
+
+Phases:
+FixIssueWithToken
+Adjectives
+BNP
+dBNP
+bBNLP
+Feature

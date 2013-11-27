@@ -1,0 +1,39 @@
+Phase:	DummyTest
+Input: Token NP SpaceToken
+Options: control = appelt
+
+Macro:A
+(
+  {Token.category==JJ}|{Token.category==JJS}|{Token.category==JJR}
+)
+
+Macro:N
+(
+  ({NP})|({Token.category==NN}|{Token.category==NNS}|{Token.category==NNP})
+)
+
+Macro:N1
+(
+  ({NP})|({Token.category==NN}|{Token.category==NNS}|{Token.category==NNP}|{Token.category==NNPS}|{Token.category==NP}|{Token.category==NPS})
+)
+
+Macro:P
+(
+  {Token.category==IN}
+)
+
+
+Rule: DummyTest
+Priority: 100
+(
+// ({Token.category==DT})?(((A|N)+)|((A|N)*(N P)?)(A|N)*)(N)+
+ ({Token.category==DT})?(((A|N1)+)|((A|N1)*(N1 P)?)(A|N1)*)(N1)+
+):dummyTest
+-->
+{
+        gate.AnnotationSet sentimentSet = (gate.AnnotationSet) bindings.get("dummyTest");
+        int length = gate.Utils.stringFor(doc, sentimentSet).length();
+        if (length > 2) {
+            outputAS.add(sentimentSet.firstNode(), sentimentSet.lastNode(), "Feature-X", Factory.newFeatureMap());
+        }
+}

@@ -1,0 +1,31 @@
+Phase:	bBNLP
+Input: dBNP SpaceToken Token
+Options: control = appelt
+
+Macro:VERB
+(
+    {Token.category==VB}|{Token.category==VBD}|{Token.category==VBN}|{Token.category==VBG}
+    //{VG}
+)
+
+Rule:bBNLP
+(
+({dBNP}):dBNP({SpaceToken})(VERB)
+):bBNLP
+-->
+{
+    AnnotationSet set = (AnnotationSet) bindings.get("bBNLP");
+    AnnotationSet dbNPset = (AnnotationSet) bindings.get("dBNP");
+    String value = gate.Utils.stringFor(doc, dbNPset);
+    Node startNode = set.firstNode();
+    Node stopNode = set.lastNode();
+    AnnotationSet sentencesSet = outputAS.get("Sentence").get("Sentence", startNode.getOffset(), stopNode.getOffset());
+    Node sentenceStart = sentencesSet.firstNode();
+    if (Math.abs(sentenceStart.getOffset() - startNode.getOffset()) < 3) {
+        FeatureMap features = Factory.newFeatureMap();
+        features.put("value", value);
+        outputAS.add(set.firstNode(), set.lastNode(), "bBNP", features);
+        outputAS.removeAll(dbNPset);
+    }
+}
+
