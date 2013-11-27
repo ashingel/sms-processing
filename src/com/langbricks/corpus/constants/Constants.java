@@ -20,4 +20,5 @@ public interface Constants {
     String VP_ANNOTATIONS = "vp";
     String BNP_ANNOTATIONS = "bnp";
     String DBNP_ANNOTATIONS = "bnp";
+    String NGRAMS_ANNOTATIONS = "ngrams";
 }

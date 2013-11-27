@@ -233,60 +233,6 @@
             <localMap/>
           </features>
         </gate.util.persistence.LanguageAnalyserPersistence>
-        <gate.util.persistence.PRPersistence>
-          <runtimeParams class="gate.util.persistence.MapPersistence">
-            <mapType>gate.util.SimpleFeatureMapImpl</mapType>
-            <localMap>
-              <entry>
-                <string>outputASName</string>
-                <null/>
-              </entry>
-              <entry>
-                <string>document</string>
-                <null/>
-              </entry>
-              <entry>
-                <string>posFeature</string>
-                <string>category</string>
-              </entry>
-              <entry>
-                <string>annotationName</string>
-                <string>NounChunk</string>
-              </entry>
-              <entry>
-                <string>unknownTag</string>
-                <string>I</string>
-              </entry>
-              <entry>
-                <string>inputASName</string>
-                <null/>
-              </entry>
-            </localMap>
-          </runtimeParams>
-          <resourceType>mark.chunking.GATEWrapper</resourceType>
-          <resourceName>Noun Phrase Chunker_0002F</resourceName>
-          <initParams class="gate.util.persistence.MapPersistence">
-            <mapType>gate.util.SimpleFeatureMapImpl</mapType>
-            <localMap>
-              <entry>
-                <string>rulesURL</string>
-                <gate.util.persistence.PersistenceManager-URLHolder>
-                  <urlString>$relpath$Tagger_NP_Chunking/rules</urlString>
-                </gate.util.persistence.PersistenceManager-URLHolder>
-              </entry>
-              <entry>
-                <string>posTagURL</string>
-                <gate.util.persistence.PersistenceManager-URLHolder>
-                  <urlString>$relpath$Tagger_NP_Chunking/pos_tag_dict</urlString>
-                </gate.util.persistence.PersistenceManager-URLHolder>
-              </entry>
-            </localMap>
-          </initParams>
-          <features class="gate.util.persistence.MapPersistence">
-            <mapType>gate.util.SimpleFeatureMapImpl</mapType>
-            <localMap/>
-          </features>
-        </gate.util.persistence.PRPersistence>
         <gate.util.persistence.LanguageAnalyserPersistence>
           <runtimeParams class="gate.util.persistence.MapPersistence">
             <mapType>gate.util.SimpleFeatureMapImpl</mapType>

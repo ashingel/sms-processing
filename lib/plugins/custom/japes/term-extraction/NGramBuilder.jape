@@ -26,7 +26,7 @@ Priority: 50
                 Annotation secondToken = (Annotation) sorted.get(i + 1);
                 Annotation thirdToken = (Annotation) sorted.get(i + 2);
                 String result = currentToken.getFeatures().get("string") + " " + secondToken.getFeatures().get("string") + " " + thirdToken.getFeatures().get("string");
-                ngrams.add(result);
+                ngrams.add(result.trim().toLowerCase()  );
             }
         }
         sentence.getFeatures().put("ngrams", ngrams);

@@ -31,12 +31,29 @@ public class TestRHSClass implements RhsAction {
                      AnnotationSet annotations, AnnotationSet inputAS,
                      AnnotationSet outputAS, Ontology ontology) throws JapeException {
 
-        gate.AnnotationSet set = (gate.AnnotationSet) bindings.get("featurePattern1");
-        gate.AnnotationSet intensifierSet = (gate.AnnotationSet) bindings.get("intensifier");
+        gate.AnnotationSet sentencesSet = (gate.AnnotationSet) bindings.get("nGramBuilder");
+        Annotation sentence = sentencesSet.iterator().next();
+        Long sentenceStart = sentence.getStartNode().getOffset();
+        Long sentenceStop = sentence.getEndNode().getOffset();
         FeatureMap features = Factory.newFeatureMap();
-        String intensifier = gate.Utils.stringFor(doc, intensifierSet);
-        features.put("intensifier", intensifier);
-        outputAS.add(set.firstNode(), set.lastNode(), "FeaturePattern1", features);
+        Collection<String> ngrams = new ArrayList<String>();
+        features.put("kind", "word");
+        AnnotationSet tokens = annotations.get("Token", features);
+        if (tokens != null) {
+            tokens = tokens.get("Token", sentenceStart, sentenceStop);
+            List sorted = gate.Utils.inDocumentOrder(tokens);
+            for (int i = 0; i < sorted.size(); i++) {
+                Annotation currentToken = (Annotation) sorted.get(i);
+                if (i + 2 <= sorted.size()) {
+                    Annotation secondToken = (Annotation) sorted.get(i + 1);
+                    Annotation thirdToken = (Annotation) sorted.get(i + 2);
+                    String result = currentToken.getFeatures().get("string") + " " + secondToken.getFeatures().get("string") + " " + thirdToken.getFeatures().get("string");
+                    ngrams.add(result);
+                }
+            }
+            sentence.getFeatures().put("ngrams", ngrams);
+        }
+
     } // end of method
 }// end of class
 

@@ -5,5 +5,6 @@ FixIssueWithToken
 Adjectives
 BNP
 dBNP
-bBNLP
-Feature
+//bBNLP
+//Feature
+NGramBuilder

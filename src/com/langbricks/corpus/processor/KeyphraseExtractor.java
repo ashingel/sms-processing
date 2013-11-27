@@ -4,6 +4,7 @@ import com.langbricks.corpus.constants.Constants;
 import com.langbricks.corpus.utilities.GateResources;
 import com.langbricks.corpus.utilities.Utilities;
 import gate.*;
+import gate.creole.ANNIEConstants;
 import gate.creole.ResourceInstantiationException;
 import gate.util.persistence.PersistenceManager;
 import org.apache.commons.lang.StringUtils;
@@ -69,6 +70,7 @@ public class KeyphraseExtractor {
         // TODO: uncomment this  and finalize processing
         corpusUtilities.normalizeCorpusMessages(Constants.INPUT_PLAIN_TEXT_PER_LINE_FORMAT_FILE);
         corpusUtilities.calculteFrequences();
+        System.gc();
         // process files
         File inputFolder = new File(outputFolderPath + "/cleanedCorpus");
         File[] inputFiles = inputFolder.listFiles();
@@ -76,6 +78,7 @@ public class KeyphraseExtractor {
         Map<String, Integer> npFrequencies = new TreeMap<String, Integer>();
         Map<String, Integer> frequencies = new TreeMap<String, Integer>();
         Map<String, Integer> allFrequencies = new TreeMap<String, Integer>();
+        Map<String, Integer> ngramFrequencies = new TreeMap<String, Integer>();
         for (int i = 0; i < inputFiles.length; i++) {
             File currentFile = inputFiles[i];
             if (!currentFile.isFile()) {
@@ -84,8 +87,14 @@ public class KeyphraseExtractor {
             // probably not a good idea to load all in memory
             Collection<String> inputTexts = Utilities.readFile(currentFile.getPath(), "UTF-8");
             // process texts
+            int index = 0;
+            int previousValue = 0;
             for (String text : inputTexts) {
-                System.out.println("process: " + text);
+                index++;
+                if ((index - previousValue) == 1000) {
+                    System.out.println("processed: " + index);
+                    previousValue = index;
+                }
                 if (text.trim().length() == 0) {
                     continue;
                 }
@@ -102,6 +111,7 @@ public class KeyphraseExtractor {
                 Collection<String> npList = extractedEntities.get(Constants.NP_ANNOTATIONS);
                 Collection<String> bnpList = extractedEntities.get(Constants.BNP_ANNOTATIONS);
                 Collection<String> dbnpList = extractedEntities.get(Constants.DBNP_ANNOTATIONS);
+                Collection<String> ngramsList = extractedEntities.get(Constants.NGRAMS_ANNOTATIONS);
 
                 // verb phrases
                 for (String vpPhrase : vpList) {
@@ -119,6 +129,15 @@ public class KeyphraseExtractor {
                         npFrequencies.put(npPhrase, npFrequencies.get(npPhrase) + 1);
                     }
                 }
+                // noun phrases
+                for (String ngram : ngramsList) {
+                    if (!ngramFrequencies.containsKey(ngram)) {
+                        ngramFrequencies.put(ngram, 1);
+                    } else {
+                        ngramFrequencies.put(ngram, ngramFrequencies.get(ngram) + 1);
+                    }
+                }
+
                 // merge noun phrases
                 Collection<String> mergedCollection = new ArrayList<String>();
                 mergedCollection.addAll(bnpList);
@@ -131,6 +150,7 @@ public class KeyphraseExtractor {
                         frequencies.put(phrase, frequencies.get(phrase) + 1);
                     }
                 }
+
             }
         }
         // calculate all frequencies
@@ -143,6 +163,7 @@ public class KeyphraseExtractor {
         saveCollectedData(npFrequencies, outputFolderPath, "nouns-phrases-frequencies.txt");
         saveCollectedData(frequencies, outputFolderPath, "noun-frequencies.txt");
         saveCollectedData(allFrequencies, outputFolderPath, "corpus-frequencies.txt");
+        saveCollectedData(ngramFrequencies, outputFolderPath, "3-grams-frequencies.txt");
     }
 
     /**
@@ -195,6 +216,7 @@ public class KeyphraseExtractor {
             AnnotationSet npAnnotations = gateDocument.getAnnotations().get("NP");
             AnnotationSet bnpAnnotations = gateDocument.getAnnotations().get("BNP");
             AnnotationSet dbnpAnnotations = gateDocument.getAnnotations().get("dBNP");
+            AnnotationSet sentencesAnnotations = gateDocument.getAnnotations().get(ANNIEConstants.SENTENCE_ANNOTATION_TYPE);
             // populate response data
             Collection<String> vpData = getAnnotations(vpAnnotations, gateDocument);
             outputMap.put(Constants.VP_ANNOTATIONS, vpData);
@@ -207,8 +229,17 @@ public class KeyphraseExtractor {
 
             Collection<String> dbnpData = getAnnotations(dbnpAnnotations, gateDocument);
             outputMap.put(Constants.DBNP_ANNOTATIONS, dbnpData);
+            // populate Ngarms data
+            Collection<String> ngramsCollection = new ArrayList<String>();
+            for (Annotation sentence : sentencesAnnotations) {
+                Collection<String> ngrams = (Collection<String>) sentence.getFeatures().get("ngrams");
+                if (ngrams != null) {
+                    ngramsCollection.addAll(ngrams);
+                }
+            }
+            outputMap.put(Constants.NGRAMS_ANNOTATIONS, ngramsCollection);
         } catch (Throwable ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
             outputMap = null;
         } finally {
             if (corpusController.getCorpus() != null) {
