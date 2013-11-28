@@ -14,10 +14,10 @@ How to run application:
   b) Path to file with messages in plain text format (1 message per line)
   c) Path to output folder where some stat will be saved
 2) Copy edited run-jar.bat file to SOURCE/build/application
-3) Run run-jar.bar file. Numner of records currently processed should be printed in command line
+3) Run run-jar.bar file. Numbner of records currently processed should be printed in command line
 
 Results explanations:
-Previously defined output folder(OUTPUT_FOLDER) should contains:
+Previously defined output folder(OUTPUT_FOLDER) should contain:
 OUTPUT_FOLDER/cleanedCorpus/frequency - simple frequency of non-processed messages(format word tab_symbol frequency).
 OUTPUT_FOLDER/cleanedCorpus/input_file_name - not really cleaned corpus. A stub for future corpus pre-processing with stopwords and dictionaries
 OUTPUT_FOLDER/cleanedCorpus/verb-frequencies.txt - verbs & verb phrases detected from corpus + frequencies.
